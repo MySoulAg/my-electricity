@@ -2,6 +2,24 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import axios from 'axios'
+import './assets/icon/iconfont.css'
+
+axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1';
+Vue.prototype.$http = axios
+
+router.beforeEach((to,from,next) => {
+  if(to.path!='/login'){
+    if(window.sessionStorage.getItem('token')){
+      next();
+    }else {
+      next('/login');
+    }
+  }else {
+    next();
+  }
+  
+})
 
 Vue.config.productionTip = false
 
