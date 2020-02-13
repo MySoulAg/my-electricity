@@ -38,15 +38,7 @@
   </article>
 </template>
 <script>
-import { Button, Form, FormItem, Input, Message } from "element-ui";
 export default {
-  components: {
-    "el-button": Button,
-    "el-form": Form,
-    "el-form-item": FormItem,
-    "el-input": Input
-  },
-
   data() {
     var validatePass = (rule, value, callback) => {
       if (value === "") {
@@ -105,7 +97,7 @@ export default {
           this.$router.push('/home')
         } else {
           console.log("登录失败");
-          Message.error("用户名或密码错误，请重新登录！");
+          this.$message.error("用户名或密码错误，请重新登录！");
           this.$refs.username.focus();
         }
       });

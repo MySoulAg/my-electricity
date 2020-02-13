@@ -3,7 +3,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import axios from 'axios'
-import './assets/icon/iconfont.css'
+import './assets/icon/iconfont.css'  //字体图标
+import './assets/js/elementUI.js'
 
 axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1';
 Vue.prototype.$http = axios
@@ -18,7 +19,6 @@ router.beforeEach((to,from,next) => {
   }else {
     next();
   }
-  
 })
 
 Vue.config.productionTip = false
