@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-header>
-      <div class="logo">
+      <div class="logo" @click="goHome">
         <div class="img"></div>
         <h1>电商后台管理系统</h1>
       </div>
@@ -16,47 +16,32 @@
         <el-menu
           default-active="2"
           class="el-menu-vertical-demo"
-          @open="handleOpen"
-          @close="handleClose"
           background-color="#333744"
           text-color="#fff"
           active-text-color="#ffd04b"
           :collapse="isCollapse"
+          :unique-opened="true"
+          :router="true"
         >
-          <el-submenu index="1">
+          <el-submenu :index="item.id+''" v-for="item in menuList" :key="item.id">
             <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>导航一</span>
+              <i :class="asideIcon(item.id)"></i>
+              <span>{{item.authName}}</span>
             </template>
+
             <el-menu-item-group>
-              <template slot="title">分组一</template>
-              <el-menu-item index="1-1">选项1</el-menu-item>
-              <el-menu-item index="1-2">选项2</el-menu-item>
+              <el-menu-item :index="'/'+item1.path" v-for="item1 in item.children" :key="item1.id">
+                <i class="iconfont icon-ca-xuexizhongxin-xiaofangkuai"></i>
+                <span>{{item1.authName}}</span>
+              </el-menu-item>
             </el-menu-item-group>
-            <el-menu-item-group title="分组2">
-              <el-menu-item index="1-3">选项3</el-menu-item>
-            </el-menu-item-group>
-            <el-submenu index="1-4">
-              <template slot="title">选项4</template>
-              <el-menu-item index="1-4-1">选项1</el-menu-item>
-            </el-submenu>
           </el-submenu>
-          <el-menu-item index="2">
-            <i class="el-icon-menu"></i>
-            <span slot="title">导航二</span>
-          </el-menu-item>
-          <el-menu-item index="3" disabled>
-            <i class="el-icon-document"></i>
-            <span slot="title">导航三</span>
-          </el-menu-item>
-          <el-menu-item index="4">
-            <i class="el-icon-setting"></i>
-            <span slot="title">导航四</span>
-          </el-menu-item>
         </el-menu>
       </el-aside>
 
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view />
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -64,8 +49,13 @@
 export default {
   data() {
     return {
-      isCollapse: false //是否折叠侧边栏
+      isCollapse: false, //是否折叠侧边栏
+      menuList: [] //侧边栏数据
     };
+  },
+
+  created() {
+    this.getMenuList();
   },
 
   methods: {
@@ -82,6 +72,41 @@ export default {
      */
     cllapseFun() {
       this.isCollapse = !this.isCollapse;
+    },
+
+    /**
+     * 获取侧边栏数据列表
+     */
+    getMenuList() {
+      this.$http.get("/menus").then(res => {
+        console.log(res.data);
+        if (res.data.meta.status == 200) {
+          this.menuList = res.data.data;
+        } else {
+          this.$message.error(res.data.meta.msg);
+        }
+      });
+    },
+
+    /**
+     * 点击logo
+     */
+    goHome(){
+      this.$router.push('/home')
+    },
+
+    /**
+     * 侧边栏图标
+     */
+    asideIcon(id) {
+      let obj = {
+        125: "iconfont icon-yonghu",
+        103: "iconfont icon-guanliyuan",
+        101: "iconfont icon-shangpin",
+        102: "iconfont icon-dingdan",
+        145: "iconfont icon-tongji"
+      };
+      return obj[id];
     }
   }
 };
@@ -101,6 +126,7 @@ export default {
   .logo {
     display: flex;
     align-items: center;
+    cursor: pointer;
 
     .img {
       width: 50px;
@@ -129,7 +155,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    
+    cursor: pointer;
 
     i {
       color: #fff;
@@ -149,5 +175,9 @@ export default {
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   min-height: 400px;
+}
+
+.iconfont {
+  margin-right: 5px;
 }
 </style>
