@@ -1,11 +1,12 @@
 <template>
-    <article>Welcome</article>
+  <article>
+    Welcome
+  </article>
 </template>
 <script>
 export default {
-    
-}
+ 
+};
 </script>
 <style lang="less" scoped>
-
 </style>
