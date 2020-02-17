@@ -224,7 +224,6 @@ export default {
           params: this.params
         })
         .then(res => {
-          console.log(res.data);
           if (res.data.meta.status == 200) {
             this.tableData = res.data.data.users;
             this.total = res.data.data.total;
@@ -259,7 +258,6 @@ export default {
      * 点击操作栏 的删除
      */
     handleDelete(row) {
-      console.log(row);
       this.$confirm("此操作将永久删除该用户, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -267,7 +265,6 @@ export default {
       })
         .then(() => {
           this.$http.delete(`/users/${row.id}`).then(res => {
-            console.log(res.data);
             if (res.data.meta.status == 200) {
               this.$message({
                 type: "success",
@@ -295,7 +292,6 @@ export default {
         if (valid) {
           //预校验成功 能够提交
           this.$http.post("/users", this.addUserInfo).then(res => {
-            console.log(res);
             if (res.data.meta.status == 201) {
               this.$message({
                 message: "添加用户成功",
@@ -378,7 +374,6 @@ export default {
      */
     handleSwitch(row) {
       this.$http.put(`/users/${row.id}/state/${row.mg_state}`).then(res => {
-        console.log(res.data);
         if (res.data.meta.status == 200) {
           this.$message({
             message: "设置成功",

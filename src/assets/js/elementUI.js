@@ -1,7 +1,6 @@
 /**
  * 用于element-ui组件的按需引入
  */
-
 import Vue from 'vue';
 import {
     Button,
@@ -28,7 +27,8 @@ import {
     Switch,
     Dialog,
     Pagination,
-    MessageBox 
+    MessageBox,
+    Tag
 } from 'element-ui';
 
 
@@ -55,6 +55,7 @@ Vue.use(TableColumn);
 Vue.use(Switch);
 Vue.use(Dialog);
 Vue.use(Pagination);
+Vue.use(Tag);
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm 

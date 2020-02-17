@@ -14,14 +14,17 @@
           <i :class="isCollapse?'el-icon-s-unfold':'el-icon-s-fold'"></i>
         </div>
         <el-menu
-          default-active="2"
+          :default-active="defaultActive"
           class="el-menu-vertical-demo"
           background-color="#333744"
           text-color="#fff"
-          active-text-color="#ffd04b"
+          active-text-color="#409EFF"
           :collapse="isCollapse"
           :unique-opened="true"
           :router="true"
+          @select="selectMenu"
+          @open="openMenu"
+          ref="menuRef"
         >
           <el-submenu :index="item.id+''" v-for="item in menuList" :key="item.id">
             <template slot="title">
@@ -49,12 +52,14 @@
 export default {
   data() {
     return {
+      defaultActive: "", //当前激活菜单
       isCollapse: false, //是否折叠侧边栏
       menuList: [] //侧边栏数据
     };
   },
 
   created() {
+    this.defaultActive = window.sessionStorage.getItem("selectMenu");
     this.getMenuList();
   },
 
@@ -90,8 +95,11 @@ export default {
     /**
      * 点击logo
      */
-    goHome(){
-      this.$router.push('/home')
+    goHome() {
+      this.$router.push("/home");
+      window.sessionStorage.removeItem("selectMenu");
+      this.defaultActive = "";
+      this.$refs.menuRef.close(window.sessionStorage.getItem("openMenu") + "");
     },
 
     /**
@@ -106,6 +114,21 @@ export default {
         145: "iconfont icon-tongji"
       };
       return obj[id];
+    },
+
+    /**
+     * 选择的哪个菜单
+     */
+    selectMenu(index) {
+      window.sessionStorage.setItem("selectMenu", index);
+      this.defaultActive = index;
+    },
+
+    /**
+     * 展开的哪个sub-menu
+     */
+    openMenu(index) {
+      window.sessionStorage.setItem("openMenu", index);
     }
   }
 };
