@@ -49,6 +49,7 @@
   </el-container>
 </template>
 <script>
+import request from "@/api/home/index.js";
 export default {
   data() {
     return {
@@ -83,11 +84,11 @@ export default {
      * 获取侧边栏数据列表
      */
     getMenuList() {
-      this.$http.get("/menus").then(res => {
-        if (res.data.meta.status == 200) {
-          this.menuList = res.data.data;
+      request.getMenuList().then(res => {
+        if (res.meta.status == 200) {
+          this.menuList = res.data;
         } else {
-          this.$message.error(res.data.meta.msg);
+          this.$message.error(res.meta.msg);
         }
       });
     },

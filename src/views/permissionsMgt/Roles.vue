@@ -55,6 +55,7 @@
   </article>
 </template>
 <script>
+import request from "@/api/permissionsMgt/roles.js";
 export default {
   data() {
     return {
@@ -73,12 +74,11 @@ export default {
      *获取角色列表
      */
     getRolesList() {
-      this.$http.get("/roles").then(res => {
-        console.log(res.data);
-        if (res.data.meta.status == 200) {
-          this.tableData = res.data.data;
+      request.getRolesList().then(res => {
+        if (res.meta.status == 200) {
+          this.tableData = res.data;
         } else {
-          this.$message.error(res.data.meta.msg);
+          this.$message.error(res.meta.msg);
         }
       });
     },
@@ -93,21 +93,17 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$http
-            .delete(`/roles/${rolesId.id}/rights/${rightsId}`)
-            .then(res => {
-              console.log(res.data);
-              if (res.data.meta.status == 200) {
-                this.$message({
-                  type: "success",
-                  message: res.data.meta.msg
-                });
-                rolesId.children = res.data.data;
-              } else {
-                this.$message.error(res.data.meta.msg);
-              }
-            });
-          
+          request.deleteRoles(rolesId, rightsId).then(res => {
+            if (res.meta.status == 200) {
+              this.$message({
+                type: "success",
+                message: res.meta.msg
+              });
+              rolesId.children = res.data;
+            } else {
+              this.$message.error(res.meta.msg);
+            }
+          });
         })
         .catch(() => {
           this.$message({

@@ -38,6 +38,7 @@
   </article>
 </template>
 <script>
+import request from "@/api/login/index.js";
 export default {
   data() {
     var validatePass = (rule, value, callback) => {
@@ -86,15 +87,15 @@ export default {
       this.$refs.password.blur();
       this.isLoading = true;
       this.loginText = "登录中";
-      
-      this.$http.post("/login", this.ruleForm).then(res => {
-        console.log(res.data);
+
+      request.login(this.ruleForm).then(res => {
+        console.log(res);
         this.isLoading = false;
         this.loginText = "登录";
-        if (res.data.meta.status == 200) {
+        if (res.meta.status == 200) {
           console.log("登录成功");
-          window.sessionStorage.setItem('token',res.data.data.token)
-          this.$router.push('/home')
+          window.sessionStorage.setItem("token", res.data.token);
+          this.$router.push("/home");
         } else {
           console.log("登录失败");
           this.$message.error("用户名或密码错误，请重新登录！");

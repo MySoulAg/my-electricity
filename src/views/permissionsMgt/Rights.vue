@@ -27,6 +27,7 @@
   </article>
 </template>
 <script>
+import request from "@/api/permissionsMgt/rights.js";
 export default {
   data() {
     return {
@@ -37,7 +38,7 @@ export default {
   },
 
   created() {
-    this.getList();
+    this.getRightsList();
     this.tableMaxHeight = window.innerHeight - 180; //表格的最大高度，根据浏览器的窗体大小而定
   },
 
@@ -45,14 +46,13 @@ export default {
     /**
      * 获取用户权限列表数据
      */
-    getList() {
-      this.$http.get(`/rights/list`).then(res => {
-        console.log(res.data);
+    getRightsList() {
+      request.getRightsList().then(res => {
         this.isShow = true;
-        if (res.data.meta.status == 200) {
-          this.tableData = res.data.data;
+        if (res.meta.status == 200) {
+          this.tableData = res.data;
         } else {
-          this.$message.error(res.data.meta.msg);
+          this.$message.error(res.meta.msg);
         }
       });
     },

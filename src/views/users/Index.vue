@@ -115,6 +115,7 @@
   </article>
 </template>
 <script>
+import request from "@/api/users/index.js";
 import check from "@/utils/check.js";
 export default {
   data() {
@@ -219,18 +220,14 @@ export default {
      * 获取用户列表数据
      */
     async getUsreInfoList() {
-      await this.$http
-        .get("/users", {
-          params: this.params
-        })
-        .then(res => {
-          if (res.data.meta.status == 200) {
-            this.tableData = res.data.data.users;
-            this.total = res.data.data.total;
-          } else {
-            this.$message.error(res.data.meta.msg);
-          }
-        });
+      await request.getUsreInfoList(this.params).then(res => {
+        if (res.meta.status == 200) {
+          this.tableData = res.data.users;
+          this.total = res.data.total;
+        } else {
+          this.$message.error(res.meta.msg);
+        }
+      });
     },
 
     /**
@@ -264,15 +261,16 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$http.delete(`/users/${row.id}`).then(res => {
-            if (res.data.meta.status == 200) {
+          request.deleteUser(row.id).then(res => {
+            console.log(res);
+            if (res.meta.status == 200) {
               this.$message({
                 type: "success",
                 message: "删除成功!"
               });
               this.getUsreInfoList();
             } else {
-              this.$message.error(res.data.meta.msg);
+              this.$message.error(res.meta.msg);
             }
           });
         })
@@ -291,8 +289,9 @@ export default {
       this.$refs.addUserInfoForm.validate(valid => {
         if (valid) {
           //预校验成功 能够提交
-          this.$http.post("/users", this.addUserInfo).then(res => {
-            if (res.data.meta.status == 201) {
+          request.addUser(this.addUserInfo).then(res => {
+            console.log(res);
+            if (res.meta.status == 201) {
               this.$message({
                 message: "添加用户成功",
                 type: "success"
@@ -301,7 +300,7 @@ export default {
               this.getUsreInfoList();
               this.$refs.addUserInfoForm.resetFields(); //表单重置
             } else {
-              this.$message.error(res.data.meta.msg);
+              this.$message.error(res.meta.msg);
             }
           });
         } else {
@@ -319,13 +318,13 @@ export default {
       this.$refs.userInfoForm.validate(valid => {
         if (valid) {
           //预校验成功 能够提交
-          this.$http
-            .put(`/users/${this.userInfo.id}`, {
+          request
+            .editorUser(this.userInfo.id, {
               email: this.userInfo.email,
               mobile: this.userInfo.mobile
             })
             .then(res => {
-              if (res.data.meta.status == 200) {
+              if (res.meta.status == 200) {
                 this.$message({
                   message: "用户信息修改成功",
                   type: "success"
@@ -333,7 +332,7 @@ export default {
                 this.dialogFormVisible = false;
                 this.getUsreInfoList();
               } else {
-                this.$message.error(res.data.meta.msg);
+                this.$message.error(res.meta.msg);
               }
             });
         } else {
@@ -373,14 +372,14 @@ export default {
      * 改变状态
      */
     handleSwitch(row) {
-      this.$http.put(`/users/${row.id}/state/${row.mg_state}`).then(res => {
-        if (res.data.meta.status == 200) {
+      request.changeType(row).then(res => {
+        if (res.meta.status == 200) {
           this.$message({
             message: "设置成功",
             type: "success"
           });
         } else {
-          this.$message.error(res.data.meta.msg);
+          this.$message.error(res.meta.msg);
         }
       });
     },
