@@ -237,28 +237,7 @@ export default {
       tableMaxHeight: 0, //表格的最大高度，根据浏览器的窗体大小而定
       total: 0, //总页数
 
-      options: [
-        {
-          value: "选项1",
-          label: "黄金糕"
-        },
-        {
-          value: "选项2",
-          label: "双皮奶"
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎"
-        },
-        {
-          value: "选项4",
-          label: "龙须面"
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭"
-        }
-      ], //角色选择下拉框数据
+      options: [], //角色选择下拉框数据
       roleValue: "", //绑定的角色选择
       roleUserInfo: "" //被点击分配角色的那个用户的信息
     };
