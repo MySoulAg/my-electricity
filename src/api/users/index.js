@@ -43,5 +43,24 @@ export default {
             method: 'put',
             url: `/users/${params.id}/state/${params.mg_state}`,
         })
+    },
+
+    /**获取角色列表 */
+    getRolesList() {
+        return request({
+            method: 'get',
+            url: '/roles',
+        })
+    },
+
+    /**分配角色 */
+    distributRole(id, rid) {
+        return request({
+            method: 'put',
+            url: `/users/${id}/role`,
+            data: {
+                rid
+            }
+        })
     }
 }

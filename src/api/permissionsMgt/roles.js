@@ -25,5 +25,24 @@ export default {
             url: '/roles',
             data
         })
+    },
+
+    /**获取用户权限 树形列表 */
+    getPermTree() {
+        return request({
+            method: 'get',
+            url: '/rights/tree',
+        })
+    },
+
+    /**修改角色授权 */
+    editorPerm(id, parm) {
+        return request({
+            method: 'post',
+            url: `/roles/${id}/rights`,
+            data: {
+                rids: parm
+            }
+        })
     }
 }

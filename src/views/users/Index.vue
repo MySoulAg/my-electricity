@@ -57,7 +57,12 @@
               size="mini"
             ></el-button>
             <el-tooltip effect="dark" content="分配角色" placement="top">
-              <el-button type="warning" icon="el-icon-setting" size="mini" @click="handleRole"></el-button>
+              <el-button
+                type="warning"
+                icon="el-icon-setting"
+                size="mini"
+                @click="handleRole(scope.row)"
+              ></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -112,6 +117,27 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormAdd = false">取 消</el-button>
         <el-button type="primary" @click="addConfirm">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 分配角色弹出层 -->
+    <el-dialog title="分配角色" :visible.sync="dialogRole" @closed="closeRoleDialog">
+      <p class="dialog-p">当前的用户：{{roleUserInfo.username}}</p>
+      <p class="dialog-p">当前的角色：{{roleUserInfo.role_name}}</p>
+      <p>
+        分配新角色：
+        <el-select v-model="roleValue" placeholder="请选择">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.roleName"
+            :value="item.id"
+          ></el-option>
+        </el-select>
+      </p>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogRole = false">取 消</el-button>
+        <el-button type="primary" @click="roleConfirm">确 定</el-button>
       </div>
     </el-dialog>
   </article>
@@ -174,6 +200,7 @@ export default {
       tableData: [], //用户列表数据
       dialogFormVisible: false, //是否显示 修改用户信息弹出层
       dialogFormAdd: false, //是否显示 添加用户弹出层
+      dialogRole: false, //是否显示 分配角色弹出层
 
       userInfo: {
         id: "", //用户ID
@@ -208,7 +235,32 @@ export default {
         mobile: [{ validator: checkMobileNo, trigger: "blur" }]
       }, //添加用户 的验证规则
       tableMaxHeight: 0, //表格的最大高度，根据浏览器的窗体大小而定
-      total: 0 //总页数
+      total: 0, //总页数
+
+      options: [
+        {
+          value: "选项1",
+          label: "黄金糕"
+        },
+        {
+          value: "选项2",
+          label: "双皮奶"
+        },
+        {
+          value: "选项3",
+          label: "蚵仔煎"
+        },
+        {
+          value: "选项4",
+          label: "龙须面"
+        },
+        {
+          value: "选项5",
+          label: "北京烤鸭"
+        }
+      ], //角色选择下拉框数据
+      roleValue: "", //绑定的角色选择
+      roleUserInfo: "" //被点击分配角色的那个用户的信息
     };
   },
 
@@ -235,8 +287,43 @@ export default {
     /**
      * 点击操作栏的 分配角色
      */
-    handleRole() {
-      this.$message.error("待开发");
+    handleRole(row) {
+      this.roleUserInfo = row;
+      this.dialogRole = true;
+      this.getRolesList();
+    },
+
+    /**
+     * 获取角色列表信息
+     */
+    getRolesList() {
+      request.getRolesList().then(res => {
+        console.log(res);
+        if (res.meta.status == 200) {
+          this.options = res.data;
+        } else {
+          this.$message.error(res.meta.msg);
+        }
+      });
+    },
+
+    /**
+     * 点击分配角色 弹出层的 确定
+     */
+    roleConfirm() {
+      request.distributRole(this.roleUserInfo.id, this.roleValue).then(res => {
+        console.log(res);
+        if (res.meta.status == 200) {
+          this.$message({
+            type: "success",
+            message: "分配成功!"
+          });
+          this.dialogRole = false;
+          this.getUsreInfoList();
+        }else {
+          this.$message.error(res.meta.msg)
+        }
+      });
     },
 
     /**
@@ -258,6 +345,13 @@ export default {
      */
     closeEditorUserInfoDialog() {
       this.$refs.userInfoForm.resetFields();
+    },
+
+    /**
+     * 分配角色的弹出层关闭时调用
+     */
+    closeRoleDialog(){
+      this.roleValue = ''
     },
 
     /**
@@ -422,5 +516,9 @@ export default {
 
 .el-pagination {
   margin-top: 20px;
+}
+
+.dialog-p {
+  padding: 10px 0;
 }
 </style>

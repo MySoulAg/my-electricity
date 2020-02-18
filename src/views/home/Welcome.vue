@@ -1,12 +1,8 @@
 <template>
-  <article ref="box">
-    <img
-      :ref="'itemHeight'+index"
-      :style="{'left':item.left+'px','top':item.top+'px'}"
-      :src="item.url"
-      v-for="(item,index) in temImgList"
-      :key="index"
-    />
+  <article ref="container" class="container">
+    <div class="img-box" ref="imgBoxRef" v-for="(item,index) in imgList" :key="index">
+      <img :src="item" />
+    </div>
   </article>
 </template>
 <script>
@@ -35,62 +31,86 @@ export default {
         require("@/assets/imgs/welcome/19.jpg"),
         require("@/assets/imgs/welcome/20.jpg")
       ],
-      temImgList: [],
       heightList: []
     };
   },
 
   mounted() {
-    const boxWidth = this.$refs.box.getBoundingClientRect().width;
-    this.waterfall(200, boxWidth, 20);
+    // this.waterfall();
+    
+    // console.log(document.getElementsByClassName('img-box')[0].offsetHeight)
+    // console.log(this.$refs.imgBoxRef);
+    // window.setTimeout(() => {
+    //   console.log(document.getElementsByClassName('img-box')[0].offsetHeight)
+    // }, 1);
+    // console.log(this.$refs.imgBoxRef[2].offsetHeight)
   },
 
   methods: {
     /**瀑布流 */
-    waterfall(imgWidth, boxWidth, itemRowGap) {
-      console.log(itemRowGap);
-      const column = Math.floor(boxWidth / imgWidth); //向下取整 求得列数
+    waterfall() {
+      const imgWidth = this.$refs.imgBoxRef[0].offsetWidth; //获取图片的宽度
+      console.log(imgWidth);
+      const containerWidth = this.$refs.container.offsetWidth; //获取container的宽度
+      console.log(containerWidth);
+      const column = Math.floor(containerWidth / imgWidth); //向下取整 求得列数
       console.log(column);
-      const gap = boxWidth % imgWidth; //总共留下的空隙
-      console.log(gap);
-      const itemColGap = Math.floor(gap / (column - 1)); //每个图片之间的 列间隙
-      console.log(itemColGap);
 
-      //先排出第一行的图片
-      for (let i = 0; i < column; i++) {
-        this.temImgList.push({
-          url: this.imgList[i],
-          left: 0 + imgWidth * i + itemColGap * i,
-          top: 0
-        });
-      }
+      //遍历所有图片
+      this.$refs.imgBoxRef.forEach((item, index) => {
+        window.setTimeout(()=>{
+console.log(item.offsetHeight)
+        },10)
 
-      this.$nextTick(() => {
-        for (let i = 0; i < column; i++) {
-          this.heightList.push(
-            Math.floor(
-              this.$refs["itemHeight" + i][0].getBoundingClientRect().height
-            )
-          );
+
+        
+        if (index < column) {
+          //第一列
+          item.style.position = "absolute";
+          item.style.left = `${imgWidth * index}px`;
+          item.style.top = `0px`;
+
+          // window.setTimeout(() => {
+          //   console.log(item.offsetHeight);
+          //   this.heightList.push(item.offsetHeight)
+          // console.log(Math.min(...this.heightList))
+          // }, 1000);
+          
+        }else {
+          
+          return
         }
-        console.log(this.heightList);
-
-        //找出数组中最小的数
-        console.log(Math.min(...this.heightList));
       });
+      console.log(this.heightList);
+
+      // this.$nextTick(() => {
+      //   for (let i = 0; i < column; i++) {
+      //     this.heightList.push(
+      //       Math.floor(
+      //         this.$refs["itemHeight" + i][0].getBoundingClientRect().height
+      //       )
+      //     );
+      //   }
+      //   console.log(this.heightList);
+
+      //   //找出数组中最小的数
+      //   console.log(Math.min(...this.heightList));
+      // });
     }
   }
 };
 </script>
 <style lang="less" scoped>
-article {
+.container {
   position: relative;
 }
 
-img {
-  width: 200px;
-  position: absolute;
-  left: 0;
-  top: 0;
+.img-box {
+  padding: 20px;
+  display: inline-block;
+}
+
+.img-box img {
+  width: 175px;
 }
 </style>

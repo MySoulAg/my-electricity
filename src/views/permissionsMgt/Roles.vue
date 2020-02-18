@@ -61,7 +61,12 @@
               icon="el-icon-delete"
               size="mini"
             >删除</el-button>
-            <el-button type="warning" icon="el-icon-setting" size="mini" @click="handlePerm">分配权限</el-button>
+            <el-button
+              type="warning"
+              icon="el-icon-setting"
+              size="mini"
+              @click="handlePerm(scope.row)"
+            >分配权限</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -82,6 +87,23 @@
         <el-button type="primary" @click="addConfirm">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 分配权限弹出层 结构树-->
+    <el-dialog title="分配权限" :visible.sync="dialogTree">
+      <el-tree
+        :data="dataList"
+        show-checkbox
+        default-expand-all
+        node-key="id"
+        :default-checked-keys="defaultCheckedKeys"
+        :props="defaultProps"
+        ref="treeRef"
+      ></el-tree>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogTree = false">取 消</el-button>
+        <el-button type="primary" @click="comfirmTree">确 定</el-button>
+      </div>
+    </el-dialog>
   </article>
 </template>
 <script>
@@ -92,6 +114,7 @@ export default {
       tableData: [], //角色列表数据
       tableMaxHeight: 0, //表格的最大高度，根据浏览器的窗体大小而定
       dialogFormAdd: false, //是否显示 添加用户弹出层
+      dialogTree: false, //是否显示 权限分配弹出层
       addRoles: {
         roleName: "", //角色名称
         roleDesc: "" //角色描述
@@ -103,7 +126,15 @@ export default {
         roleDesc: [
           { required: true, message: "请输入角色描述", trigger: "blur" }
         ]
-      } //添加角色 的验证规则
+      }, //添加角色 的验证规则
+
+      dataList: [], //结构树 数据
+      defaultProps: {
+        children: "children",
+        label: "authName"
+      },
+      defaultCheckedKeys: [], //默认勾选得权限
+      roleId: "" //将要分配权限的ID
     };
   },
 
@@ -127,6 +158,29 @@ export default {
     },
 
     /**
+     * 点击结构树中的确认
+     */
+    comfirmTree() {
+      let temArr = [
+        ...this.$refs.treeRef.getHalfCheckedKeys(),
+        ...this.$refs.treeRef.getCheckedKeys()
+      ];
+      request.editorPerm(this.roleId, temArr.join(",")).then(res => {
+        console.log(res);
+        if (res.meta.status == 200) {
+          this.$message({
+            type: "success",
+            message: "更新成功!"
+          });
+          this.getRolesList();
+          this.dialogTree = false;
+        } else {
+          this.$message.error(res.meta.msg);
+        }
+      });
+    },
+
+    /**
      * 点击操作栏 的编辑
      */
     handleEdit() {
@@ -139,12 +193,44 @@ export default {
     handleDelete() {
       this.$message.error("待开发");
     },
-    
+
     /**
      * 点击操作栏 的分配权限
      */
-    handlePerm() {
-      this.$message.error("待开发");
+    handlePerm(row) {
+      // this.$message.error("待开发0");
+      this.defaultCheckedKeys = [];
+      this.getPermTree(row.children);
+      this.roleId = row.id;
+    },
+
+    /**
+     * 获取所有权限 树形列表
+     */
+    getPermTree(node) {
+      request.getPermTree().then(res => {
+        console.log(res);
+        if (res.meta.status == 200) {
+          this.dialogTree = true;
+          this.dataList = res.data;
+          this.getDefault(node);
+        } else {
+          this.$message.error(res.meta.msg);
+        }
+      });
+    },
+
+    /**
+     * 递归判断当前节点是不是最后一个节点 即：当前节点没有children属性 并将最后节点的id存在defaultCheckedKeys数组中
+     */
+    getDefault(node) {
+      node.forEach(item => {
+        if (item.children) {
+          this.getDefault(item.children);
+        } else {
+          this.defaultCheckedKeys.push(item.id);
+        }
+      });
     },
 
     /**
