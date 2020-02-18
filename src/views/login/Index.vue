@@ -5,7 +5,7 @@
         <div class="nest"></div>
       </div>
       <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="demo-ruleForm">
-        <el-form-item prop="username">
+        <el-form-item prop="username" :error="errorUserName">
           <el-input
             ref="username"
             prefix-icon="iconfont icon-iconyonghu"
@@ -15,7 +15,7 @@
             @keyup.enter.native="login"
           ></el-input>
         </el-form-item>
-        <el-form-item prop="password">
+        <el-form-item prop="password" :error="errorPassword">
           <el-input
             ref="password"
             prefix-icon="iconfont icon-mima"
@@ -64,6 +64,8 @@ export default {
         username: [{ validator: validatePass, trigger: "blur" }],
         password: [{ validator: validatePass2, trigger: "blur" }]
       },
+      errorUserName: "", //用户名的错误信息
+      errorPassword: "", //密码的错误信息
       isLoading: false,
       loginText: "登录"
     };
@@ -98,8 +100,19 @@ export default {
           this.$router.push("/home");
         } else {
           console.log("登录失败");
-          this.$message.error("用户名或密码错误，请重新登录！");
-          this.$refs.username.focus();
+          if (res.meta.status == 400 && res.meta.msg == "用户名不存在") {
+            this.$nextTick(() => {
+              this.errorUserName = "用户名不存在";
+            });
+            this.errorUserName = "";
+            this.$refs.username.focus(); //聚焦到用户名输入框
+          } else if (res.meta.status == 400 && res.meta.msg == "密码错误") {
+            this.$nextTick(() => {
+              this.errorPassword = "密码错误";
+            });
+            this.errorPassword = "";
+            this.$refs.password.focus();
+          }
         }
       });
     }

@@ -8,7 +8,7 @@
     </el-breadcrumb>
 
     <el-card>
-      <el-button type="primary">添加角色</el-button>
+      <el-button type="primary" @click="handleAddRoles">添加角色</el-button>
       <!-- 表格 -->
       <el-table stripe border :data="tableData" style="width: 100%" :max-height="tableMaxHeight">
         <el-table-column align="center" type="expand">
@@ -48,10 +48,40 @@
         <el-table-column align="center" prop="roleName" label="角色名称"></el-table-column>
         <el-table-column align="center" prop="roleDesc" label="角色描述"></el-table-column>
         <el-table-column align="center" label="操作">
-          <template></template>
+          <template slot-scope="scope">
+            <el-button
+              @click="handleEdit(scope.row)"
+              type="primary"
+              icon="el-icon-edit"
+              size="mini"
+            >编辑</el-button>
+            <el-button
+              @click="handleDelete(scope.row)"
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+            >删除</el-button>
+            <el-button type="warning" icon="el-icon-setting" size="mini" @click="handlePerm">分配权限</el-button>
+          </template>
         </el-table-column>
       </el-table>
     </el-card>
+
+    <!-- 添加角色弹出层 -->
+    <el-dialog title="添加角色" :visible.sync="dialogFormAdd" @closed="closeAddRolesDialog">
+      <el-form :model="addRoles" :rules="addRolesRules" ref="addRolesForm">
+        <el-form-item label="角色名称" label-width="80px" prop="roleName">
+          <el-input v-model="addRoles.roleName"></el-input>
+        </el-form-item>
+        <el-form-item label="角色描述" label-width="80px" prop="roleDesc">
+          <el-input v-model="addRoles.roleDesc"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormAdd = false">取 消</el-button>
+        <el-button type="primary" @click="addConfirm">确 定</el-button>
+      </div>
+    </el-dialog>
   </article>
 </template>
 <script>
@@ -60,7 +90,20 @@ export default {
   data() {
     return {
       tableData: [], //角色列表数据
-      tableMaxHeight: 0 //表格的最大高度，根据浏览器的窗体大小而定
+      tableMaxHeight: 0, //表格的最大高度，根据浏览器的窗体大小而定
+      dialogFormAdd: false, //是否显示 添加用户弹出层
+      addRoles: {
+        roleName: "", //角色名称
+        roleDesc: "" //角色描述
+      }, //添加角色 表单
+      addRolesRules: {
+        roleName: [
+          { required: true, message: "请输入角色名称", trigger: "blur" }
+        ],
+        roleDesc: [
+          { required: true, message: "请输入角色描述", trigger: "blur" }
+        ]
+      } //添加角色 的验证规则
     };
   },
 
@@ -81,6 +124,67 @@ export default {
           this.$message.error(res.meta.msg);
         }
       });
+    },
+
+    /**
+     * 点击操作栏 的编辑
+     */
+    handleEdit() {
+      this.$message.error("待开发");
+    },
+
+    /**
+     * 点击操作栏 的删除
+     */
+    handleDelete() {
+      this.$message.error("待开发");
+    },
+    
+    /**
+     * 点击操作栏 的分配权限
+     */
+    handlePerm() {
+      this.$message.error("待开发");
+    },
+
+    /**
+     * 点击添加角色弹出层的 确认
+     */
+    addConfirm() {
+      this.$refs.addRolesForm.validate(valid => {
+        if (valid) {
+          //预校验成功 能够提交
+          request.addRoles(this.addRoles).then(res => {
+            console.log(res);
+            if (res.meta.status == 201) {
+              this.$message({
+                type: "success",
+                message: "添加成功!"
+              });
+              this.getRolesList();
+              this.dialogFormAdd = false;
+            }
+          });
+        } else {
+          //预校验失败
+
+          return false;
+        }
+      });
+    },
+
+    /**
+     * 点击 添加角色
+     */
+    handleAddRoles() {
+      this.dialogFormAdd = true;
+    },
+
+    /**
+     * 添加角色的弹出层关闭时调用
+     */
+    closeAddRolesDialog() {
+      this.$refs.addRolesForm.resetFields();
     },
 
     /**

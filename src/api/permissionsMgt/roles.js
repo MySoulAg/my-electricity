@@ -11,10 +11,19 @@ export default {
     },
 
     /**删除权限 */
-    deleteRoles(rolesId,rightsId){
+    deleteRoles(rolesId, rightsId) {
         return request({
             method: 'delete',
             url: `/roles/${rolesId.id}/rights/${rightsId}`,
+        })
+    },
+
+    /**添加角色 */
+    addRoles(data) {
+        return request({
+            method: 'post',
+            url: '/roles',
+            data
         })
     }
 }

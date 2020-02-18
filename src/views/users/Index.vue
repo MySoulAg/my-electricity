@@ -56,7 +56,9 @@
               icon="el-icon-delete"
               size="mini"
             ></el-button>
-            <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+            <el-tooltip effect="dark" content="分配角色" placement="top">
+              <el-button type="warning" icon="el-icon-setting" size="mini" @click="handleRole"></el-button>
+            </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
@@ -228,6 +230,13 @@ export default {
           this.$message.error(res.meta.msg);
         }
       });
+    },
+
+    /**
+     * 点击操作栏的 分配角色
+     */
+    handleRole() {
+      this.$message.error("待开发");
     },
 
     /**
