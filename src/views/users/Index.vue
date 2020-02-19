@@ -16,7 +16,7 @@
             @clear="getUsreInfoList"
             @keyup.enter.native="search"
             placeholder="请输入搜索内容"
-            v-model="params.query"
+            v-model="pageParams.query"
           >
             <el-button @click="search" slot="append" :icon="searchObj.icon">{{searchObj.text}}</el-button>
           </el-input>
@@ -71,9 +71,9 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="params.pagenum"
+        :current-page="pageParams.pagenum"
         :page-sizes="[2, 5, 10, 20]"
-        :page-size="params.pagesize"
+        :page-size="pageParams.pagesize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
       ></el-pagination>
@@ -192,7 +192,7 @@ export default {
         icon: "el-icon-search",
         text: "搜索"
       },
-      params: {
+      pageParams: {
         query: "", //搜索内容
         pagenum: 1, //当前页码
         pagesize: 5 //每页显示条数
@@ -253,7 +253,7 @@ export default {
      * 获取用户列表数据
      */
     async getUsreInfoList() {
-      await request.getUsreInfoList(this.params).then(res => {
+      await request.getUsreInfoList(this.pageParams).then(res => {
         if (res.meta.status == 200) {
           this.tableData = res.data.users;
           this.total = res.data.total;
@@ -470,7 +470,7 @@ export default {
      * 改变每页条数
      */
     handleSizeChange(val) {
-      this.params.pagesize = val;
+      this.pageParams.pagesize = val;
       this.getUsreInfoList();
     },
 
@@ -478,7 +478,7 @@ export default {
      * 改变当前页数
      */
     handleCurrentChange(val) {
-      this.params.pagenum = val;
+      this.pageParams.pagenum = val;
       this.getUsreInfoList();
     }
   }
