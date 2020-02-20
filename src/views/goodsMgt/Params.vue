@@ -20,7 +20,7 @@
       </div>
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="动态参数" name="many">
-          <el-button :disabled="isDisabled1" size="mini" type="primary">添加参数</el-button>
+          <el-button :disabled="isDisabled1" size="mini" type="primary" @click="addParam">添加参数</el-button>
           <!-- 参数表格 -->
           <el-table stripe border :data="tableData1" style="width: 100%">
             <el-table-column align="center" type="expand">
@@ -31,13 +31,13 @@
             <el-table-column align="center" label="操作">
               <template slot-scope="scope">
                 <el-button
-                  @click="handleEdit1(scope.row)"
+                  @click="handleEdit(scope.row)"
                   type="primary"
                   icon="el-icon-edit"
                   size="mini"
                 >修改</el-button>
                 <el-button
-                  @click="handleDelete1(scope.row)"
+                  @click="handleDelete(scope.row)"
                   type="danger"
                   icon="el-icon-delete"
                   size="mini"
@@ -46,8 +46,8 @@
             </el-table-column>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="静态参数" name="only">
-          <el-button :disabled="isDisabled2" size="mini" type="primary">添加属性</el-button>
+        <el-tab-pane label="静态属性" name="only">
+          <el-button :disabled="isDisabled2" size="mini" type="primary" @click="addAttribute">添加属性</el-button>
           <!-- 属性表格 -->
           <el-table stripe border :data="tableData2" style="width: 100%">
             <el-table-column align="center" type="expand">
@@ -58,13 +58,13 @@
             <el-table-column align="center" label="操作">
               <template slot-scope="scope">
                 <el-button
-                  @click="handleEdit2(scope.row)"
+                  @click="handleEdit(scope.row)"
                   type="primary"
                   icon="el-icon-edit"
                   size="mini"
                 >修改</el-button>
                 <el-button
-                  @click="handleDelete2(scope.row)"
+                  @click="handleDelete(scope.row)"
                   type="danger"
                   icon="el-icon-delete"
                   size="mini"
@@ -75,6 +75,50 @@
         </el-tab-pane>
       </el-tabs>
     </el-card>
+
+    <!-- 添加分类弹出层 -->
+    <el-dialog
+      :title="isDongTai?'添加动态参数':'添加静态属性'"
+      :visible.sync="addDialog"
+      @open="closeAddDialog"
+    >
+      <el-form
+        :model="addForm"
+        :rules="isDongTai?addRules1:addRules2"
+        ref="addForm"
+        label-width="100px"
+      >
+        <el-form-item :label="isDongTai?'动态参数':'静态属性'" prop="attr_name">
+          <el-input v-model="addForm.attr_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addDialog = false">取 消</el-button>
+        <el-button type="primary" @click="addConfirm">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 修改分类弹出层 -->
+    <el-dialog
+      :title="isDongTai?'修改动态参数':'修改静态属性'"
+      :visible.sync="editorDialog"
+      @open="closeEditorDialog"
+    >
+      <el-form
+        :model="editorForm"
+        :rules="isDongTai?editorRules1:editorRules2"
+        ref="editorForm"
+        label-width="100px"
+      >
+        <el-form-item :label="isDongTai?'动态参数':'静态属性'" prop="attr_name">
+          <el-input v-model="editorForm.attr_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editorDialog = false">取 消</el-button>
+        <el-button type="primary" @click="editorConfirm">确 定</el-button>
+      </div>
+    </el-dialog>
   </article>
 </template>
 <script>
@@ -82,8 +126,40 @@ import request from "@/api/goodsMgt/params.js";
 export default {
   data() {
     return {
+      dialogTitle: "添加动态参数", //弹框的标题
+      isDongTai: true, //tab是否处于动态参数项
+      addDialog: false, //是否显示添加弹窗
+      editorDialog: false, //是否显示修改弹框
+      addForm: {
+        attr_name: "" //参数名称
+      },
+      editorForm: {
+        attr_name: "" //参数名称
+      },
+      addRules1: {
+        attr_name: [
+          { required: true, message: "请输入动态参数", trigger: "blur" }
+        ]
+      },
+      editorRules1: {
+        attr_name: [
+          { required: true, message: "请输入动态参数", trigger: "blur" }
+        ]
+      },
+      addRules2: {
+        attr_name: [
+          { required: true, message: "请输入静态属性", trigger: "blur" }
+        ]
+      },
+      editorRules2: {
+        attr_name: [
+          { required: true, message: "请输入静态属性", trigger: "blur" }
+        ]
+      },
+
       cascaderValue: [], //级联选择框选中的值
       threeId: "", //级联选择框选中值的 第三级ID
+      attr_id: "",
       sel: "many", //默认参数
       options: [], //级联选择框的可选值
       props: {
@@ -117,6 +193,86 @@ export default {
       });
     },
 
+    /**点击添加弹出层的 确定 */
+    addConfirm() {
+      this.$refs.addForm.validate(valid => {
+        if (valid) {
+          request
+            .addAttributes(this.threeId, {
+              attr_name: this.addForm.attr_name,
+              attr_sel: this.sel
+            })
+            .then(res => {
+              console.log(res);
+              if (res.meta.status == 201) {
+                this.$message({
+                  type: "success",
+                  message: "创建成功!"
+                });
+                this.addDialog = false;
+                this.getCategoriesList();
+              } else {
+                this.$message.error(res.meta.msg);
+              }
+            });
+        } else {
+          return;
+        }
+      });
+    },
+
+    /**点击修改弹出层的 确定 */
+    editorConfirm() {
+      this.$refs.editorForm.validate(valid => {
+        if (valid) {
+          request
+            .editorAttributes(this.threeId, this.attr_id, {
+              attr_name: this.editorForm.attr_name,
+              attr_sel: this.sel
+            })
+            .then(res => {
+              console.log(res);
+              if (res.meta.status == 200) {
+                this.$message({
+                  type: "success",
+                  message: "修改成功!"
+                });
+                this.editorDialog = false;
+                this.getCategoriesList();
+              } else {
+                this.$message.error(res.meta.msg);
+              }
+            });
+        } else {
+          return;
+        }
+      });
+    },
+
+    /**关闭添加分类弹出层 */
+    closeAddDialog() {
+      if (this.$refs.addForm) {
+        this.$refs.addForm.resetFields();
+      }
+    },
+
+    /**关闭修改分类弹出层 */
+    closeEditorDialog() {
+      if (this.$refs.editorForm) {
+        this.$refs.editorForm.resetFields();
+      }
+    },
+
+    /**点击添加属性 */
+    addAttribute() {
+      this.addDialog = true;
+    },
+
+    /**点击添加参数 */
+    addParam() {
+      this.addDialog = true;
+    },
+
     /**添加分类的下拉框改变选择时 */
     handleChange(value) {
       console.log(value);
@@ -125,6 +281,8 @@ export default {
         this.isDisabled2 = true;
         this.cascaderValue = [];
         this.threeId = "";
+        this.tableData1 = [];
+        this.tableData2 = [];
       } else {
         this.isDisabled1 = false;
         this.isDisabled2 = false;
@@ -154,6 +312,7 @@ export default {
 
     /**tab切换时 */
     handleClick(tab) {
+      this.isDongTai = !this.isDongTai;
       this.sel = tab.name;
       if (this.cascaderValue.length != 0) {
         this.getCategoriesList();
@@ -163,29 +322,45 @@ export default {
     /**
      * 点击操作栏 的编辑
      */
-    handleEdit1() {
-      this.$message.error("待开发");
-    },
+    handleEdit(row) {
+      this.editorDialog = true;
+      this.attr_id = row.attr_id;
 
-    /**
-     * 点击操作栏 的编辑
-     */
-    handleEdit2() {
-      this.$message.error("待开发");
-    },
-
-    /**
-     * 点击操作栏 的删除
-     */
-    handleDelete1() {
-      this.$message.error("待开发");
+      this.$nextTick(() => {
+        this.editorForm.attr_name = row.attr_name;
+      });
+      this.editorForm.attr_name = "";
     },
 
     /**
      * 点击操作栏 的删除
      */
-    handleDelete2() {
-      this.$message.error("待开发");
+    handleDelete(row) {
+      this.$confirm("此操作将永久删除该参数, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          request.deleteAttributes(this.threeId, row.attr_id).then(res => {
+            console.log(res);
+            if (res.meta.status == 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功!"
+              });
+              this.getCategoriesList();
+            } else {
+              this.$message.error(res.meta.msg);
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
     }
   }
 };
