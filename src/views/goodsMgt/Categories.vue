@@ -77,14 +77,12 @@
         </el-form-item>
 
         <el-form-item label="父级分类">
-          <div>
             <el-cascader
               v-model="cascaderValue"
               :options="options"
               :props="props"
               @change="handleChange"
             ></el-cascader>
-          </div>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
