@@ -24,7 +24,29 @@
           <!-- 参数表格 -->
           <el-table stripe border :data="tableData1" style="width: 100%">
             <el-table-column align="center" type="expand">
-              <template slot-scope="scope">{{scope.row.attr_vals}}</template>
+              <template slot-scope="scope">
+                <el-tag
+                  closable
+                  v-for="(item,index) in scope.row.attr_vals"
+                  :key="index"
+                  @close="handleClose(scope.row,index)"
+                >{{item}}</el-tag>
+                <el-input
+                  class="input-new-tag"
+                  v-if="scope.row.inputVisible"
+                  v-model="scope.row.inputValue"
+                  ref="saveTagInput"
+                  size="small"
+                  @keyup.enter.native="handleInputConfirm(scope.row)"
+                  @blur="handleInputConfirm(scope.row)"
+                ></el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="small"
+                  @click="showInput(scope.row)"
+                >+ New Tag</el-button>
+              </template>
             </el-table-column>
             <el-table-column align="center" type="index" :index="1" label="#"></el-table-column>
             <el-table-column align="center" prop="attr_name" label="参数名称"></el-table-column>
@@ -51,7 +73,29 @@
           <!-- 属性表格 -->
           <el-table stripe border :data="tableData2" style="width: 100%">
             <el-table-column align="center" type="expand">
-              <template slot-scope="scope">{{scope.row.attr_vals}}</template>
+              <template slot-scope="scope">
+                <el-tag
+                  closable
+                  v-for="(item,index) in scope.row.attr_vals"
+                  :key="index"
+                  @close="handleClose(scope.row,index)"
+                >{{item}}</el-tag>
+                <el-input
+                  class="input-new-tag"
+                  v-if="scope.row.inputVisible"
+                  v-model="scope.row.inputValue"
+                  ref="saveTagInput"
+                  size="small"
+                  @keyup.enter.native="handleInputConfirm(scope.row)"
+                  @blur="handleInputConfirm(scope.row)"
+                ></el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="small"
+                  @click="showInput(scope.row)"
+                >+ New Tag</el-button>
+              </template>
             </el-table-column>
             <el-table-column align="center" type="index" :index="1" label="#"></el-table-column>
             <el-table-column align="center" prop="attr_name" label="属性名称"></el-table-column>
@@ -249,6 +293,64 @@ export default {
       });
     },
 
+    /**删除tag */
+    handleClose(row, index) {
+      let temTag = row.attr_vals.splice(index, 1);
+      request
+        .editorTag(this.threeId, row.attr_id, {
+          attr_name: row.attr_name,
+          attr_sel: this.sel,
+          attr_vals: row.attr_vals.join(" ")
+        })
+        .then(res => {
+          if (res.meta.status == 200) {
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+          } else {
+            row.attr_vals.splice(index, 0, temTag[0]);
+            this.$message.error(res.meta.msg);
+          }
+        });
+    },
+
+    /**tag输入框失焦或enter时 */
+    handleInputConfirm(row) {
+      let inputValue = row.inputValue;
+      if (inputValue) {
+        row.attr_vals.push(inputValue);
+        request
+          .editorTag(this.threeId, row.attr_id, {
+            attr_name: row.attr_name,
+            attr_sel: this.sel,
+            attr_vals: row.attr_vals.join(" ")
+          })
+          .then(res => {
+            if (res.meta.status == 200) {
+              this.$message({
+                type: "success",
+                message: "添加成功!"
+              });
+            } else {
+              row.attr_vals.pop();
+              this.$message.error(res.meta.msg);
+            }
+          });
+        // row.attr_vals.push(inputValue);
+      }
+      row.inputVisible = false;
+      row.inputValue = "";
+    },
+
+    /**点击添加tag */
+    showInput(row) {
+      row.inputVisible = true;
+      this.$nextTick(() => {
+        this.$refs.saveTagInput.$refs.input.focus();
+      });
+    },
+
     /**关闭添加分类弹出层 */
     closeAddDialog() {
       if (this.$refs.addForm) {
@@ -297,6 +399,13 @@ export default {
       request.getCategoriesList(this.threeId, this.sel).then(res => {
         console.log(res);
         if (res.meta.status == 200) {
+          res.data.forEach(element => {
+            element.attr_vals = element.attr_vals
+              ? this.handleTag(element.attr_vals)
+              : [];
+            element.inputVisible = false;
+            element.inputValue = "";
+          });
           if (this.sel == "many") {
             //动态
             this.tableData1 = res.data;
@@ -330,6 +439,11 @@ export default {
         this.editorForm.attr_name = row.attr_name;
       });
       this.editorForm.attr_name = "";
+    },
+
+    /**表格展开的tag标签处理 字符串 转 数组*/
+    handleTag(tag) {
+      return tag.split(" ");
     },
 
     /**
@@ -376,5 +490,27 @@ export default {
 
 .el-table {
   margin-top: 15px;
+}
+
+.el-tag {
+  margin-left: 10px;
+}
+
+.el-tag:first-of-type {
+  margin-left: 0;
+}
+
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
+}
+
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 </style>

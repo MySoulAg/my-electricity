@@ -45,5 +45,14 @@ export default {
             method: 'delete',
             url: `/categories/${id}/attributes/${attrId}`,
         })
+    },
+
+    /**添加Tag标签 */
+    editorTag(id, attrId, data) {
+        return request({
+            method: 'put',
+            url: `/categories/${id}/attributes/${attrId}`,
+            data
+        })
     }
 }
