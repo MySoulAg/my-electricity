@@ -9,6 +9,7 @@ const Rights = () => import('@/views/permissionsMgt/Rights.vue') //权限列表
 const Categories = () => import('@/views/goodsMgt/Categories.vue') //商品分类
 const Goods = () => import('@/views/goodsMgt/Goods.vue') //商品列表
 const Params = () => import('@/views/goodsMgt/Params.vue') //分类参数
+const AddGoods = () => import('@/views/goodsMgt/AddGoods.vue') //添加商品
 
 const Orders = () => import('@/views/orderMgt/Orders.vue') //订单列表
 
@@ -56,6 +57,11 @@ export default [{
             path: '/params',
             name: "Params",
             component: Params,
+        },
+        {
+            path: '/addGoods',
+            name: "AddGoods",
+            component: AddGoods,
         },
         {
             path: '/orders',

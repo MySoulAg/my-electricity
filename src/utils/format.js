@@ -55,4 +55,41 @@ export default {
       return result[1] + star + result[3];
     }
   },
+
+  /**
+   * 是否加0
+   * @param va 数字参数
+   */
+  padDate(va) {
+    va = va < 10 ? "0" + va : va;
+    return va;
+  },
+
+  /**
+   * 处理日期
+   * @param val 传入标准时间
+   */
+  handleDate(type, val) {
+    const value = new Date(val);
+    const year = value.getFullYear();
+    const month = this.padDate(value.getMonth() + 1);
+    const day = this.padDate(value.getDate());
+    const h = this.padDate(value.getHours());
+    const m = this.padDate(value.getMinutes());
+    const s = this.padDate(value.getSeconds());
+    if (type == "yyyy年MM月DD日") {
+      // cn
+      return `${year}年${month}月${day}日`;
+    } else if (type == "yyyy年MM月DD日 hh时mm分") {
+      // cn-dt
+      return `${year}年${month}月${day}日 ${h}时${m}分`;
+    } else if (type == "yyyy-MM-DD") {
+      // zh
+      return `${year}-${month}-${day}`;
+    } else if (type == "yyyy-MM-DD hh:mm:ss") {
+      return `${year}-${month}-${day} ${h}:${m}:${s}`;
+    } else if (type == "yyyy-MM-DD hh:mm") {
+      return `${year}-${month}-${day} ${h}:${m}`;
+    }
+  },
 }
