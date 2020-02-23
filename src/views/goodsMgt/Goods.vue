@@ -16,7 +16,7 @@
             @clear="getGoodsList"
             @keyup.enter.native="search"
             placeholder="请输入搜索内容"
-            v-model="getGoodsParams.query"
+            v-model="getOrdersParams.query"
           >
             <el-button @click="search" slot="append" :icon="searchObj.icon">{{searchObj.text}}</el-button>
           </el-input>
@@ -55,9 +55,9 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="getGoodsParams.pagenum"
+        :current-page="getOrdersParams.pagenum"
         :page-sizes="[5, 10, 20, 40]"
-        :page-size="getGoodsParams.pagesize"
+        :page-size="getOrdersParams.pagesize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
       ></el-pagination>
@@ -75,7 +75,7 @@ export default {
         text: "搜索"
       },
       goodsTableData: [], //商品表格列表
-      getGoodsParams: {
+      getOrdersParams: {
         query: "", //搜索参数
         pagenum: 1, //当前页码数
         pagesize: 10 //每页显示条数
@@ -91,7 +91,7 @@ export default {
   methods: {
     /**获取商品列表 */
     async getGoodsList() {
-      await request.getGoodsList(this.getGoodsParams).then(res => {
+      await request.getGoodsList(this.getOrdersParams).then(res => {
         console.log(res);
         if (res.meta.status == 200) {
           this.goodsTableData = res.data.goods;
@@ -103,8 +103,8 @@ export default {
     },
 
     /**点击 添加商品 */
-    addGoods(){
-        this.$router.push('/addGoods')
+    addGoods() {
+      this.$router.push("/addGoods");
     },
 
     /**点击操作栏的 编辑 */
@@ -161,13 +161,13 @@ export default {
 
     /**改变每页条数 */
     handleSizeChange(val) {
-      this.getGoodsParams.pagesize = val;
+      this.getOrdersParams.pagesize = val;
       this.getGoodsList();
     },
 
     /**改变页数 */
     handleCurrentChange(val) {
-      this.getGoodsParams.pagenum = val;
+      this.getOrdersParams.pagenum = val;
       this.getGoodsList();
     }
   }

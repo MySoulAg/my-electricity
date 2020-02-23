@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import echarts from "echarts";
 import VueQuillEditor from 'vue-quill-editor'//富文本编辑器
 
 import 'quill/dist/quill.core.css'//富文本样式
@@ -15,6 +16,8 @@ import ZkTable from 'vue-table-with-tree-grid'
 
 Vue.use(ZkTable)
 Vue.use(VueQuillEditor, /* { default global options } */)
+
+Vue.prototype.$echarts = echarts;
 
 
 router.beforeEach((to, from, next) => {
