@@ -22,7 +22,13 @@
         </el-col>
       </el-row>
       <!-- 表格 -->
-      <el-table :data="ordersTableData" stripe border style="width: 100%">
+      <el-table
+        :data="ordersTableData"
+        stripe
+        border
+        style="width: 100%"
+        :max-height="tableMaxHeight"
+      >
         <el-table-column align="center" type="index" :index="1" label="#"></el-table-column>
         <el-table-column align="center" prop="order_number" label="订单编号" min-width="300"></el-table-column>
         <el-table-column align="center" prop="order_price" label="订单价格" min-width="110"></el-table-column>
@@ -82,6 +88,7 @@ export default {
         pagenum: 1, //当前页码数
         pagesize: 10 //每页显示条数
       },
+      tableMaxHeight: 0, //表格的最大高度，根据浏览器的窗体大小而定
       ordersTableData: [], //订单表格列表
       total: 0 //表格数据总页数
     };
@@ -89,6 +96,7 @@ export default {
 
   created() {
     this.getOrdersList();
+    this.tableMaxHeight = window.innerHeight - 290; //表格的最大高度，根据浏览器的窗体大小而定
   },
 
   methods: {

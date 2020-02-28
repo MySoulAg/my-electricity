@@ -435,6 +435,9 @@ export default {
       this.getUsreInfoList().then(() => {
         (this.searchObj.icon = "el-icon-search"),
           (this.searchObj.text = "搜索");
+      }).catch(()=>{
+        (this.searchObj.icon = "el-icon-search"),
+          (this.searchObj.text = "搜索");
       });
     },
 

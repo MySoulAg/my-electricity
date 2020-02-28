@@ -14,6 +14,7 @@
 
       <!-- 表格 -->
       <zk-table
+        :style="{'max-height':tableMaxHeight+'px'}"
         ref="table"
         sum-text="sum"
         index-text="#"
@@ -25,21 +26,20 @@
         :tree-type="true"
         :expand-type="false"
         :selection-type="false"
-        :max-height="tableMaxHeight"
       >
         <!-- 是否有效 -->
-        <template slot="isEffective" scope="scope">
+        <template slot="isEffective" slot-scope="scope">
           <i v-if="!scope.row.cat_deleted" class="el-icon-success"></i>
           <i v-if="scope.row.cat_deleted" class="el-icon-error"></i>
         </template>
         <!-- 排序 -->
-        <template slot="sort" scope="scope">
+        <template slot="sort" slot-scope="scope">
           <el-tag size="mini" v-if="scope.row.cat_level==0">一级</el-tag>
           <el-tag size="mini" v-if="scope.row.cat_level==1" type="success">二级</el-tag>
           <el-tag size="mini" v-if="scope.row.cat_level==2" type="warning">三级</el-tag>
         </template>
         <!-- 操作 -->
-        <template slot="operation" scope="scope">
+        <template slot="operation" slot-scope="scope">
           <el-button size="mini" type="primary" icon="el-icon-edit" @click="handleEdit(scope)">编辑</el-button>
           <el-button size="mini" type="danger" icon="el-icon-delete" @click="handleDelete(scope)">删除</el-button>
         </template>
@@ -77,12 +77,12 @@
         </el-form-item>
 
         <el-form-item label="父级分类">
-            <el-cascader
-              v-model="cascaderValue"
-              :options="options"
-              :props="props"
-              @change="handleChange"
-            ></el-cascader>
+          <el-cascader
+            v-model="cascaderValue"
+            :options="options"
+            :props="props"
+            @change="handleChange"
+          ></el-cascader>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -146,7 +146,7 @@ export default {
       pageParams: {
         type: 3, //获取所有级别的分类
         pagenum: 1, //当前页码
-        pagesize: 5 //每页显示条数
+        pagesize: 10 //每页显示条数
       },
       total: 0, //总页数
       ClassifyRules: {
@@ -293,6 +293,7 @@ export default {
 
 .zk-table {
   margin: 20px 0;
+  overflow-y: scroll;
 }
 
 .el-icon-success {

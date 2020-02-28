@@ -26,7 +26,7 @@
         </el-col>
       </el-row>
       <!-- 表格 -->
-      <el-table :data="goodsTableData" stripe border style="width: 100%">
+      <el-table :data="goodsTableData" stripe border style="width: 100%" :max-height="tableMaxHeight">
         <el-table-column align="center" type="index" :index="1" label="#"></el-table-column>
         <el-table-column align="center" prop="goods_name" label="商品名称" min-width="480"></el-table-column>
         <el-table-column align="center" prop="goods_price" label="商品价格(元)" min-width="110"></el-table-column>
@@ -75,6 +75,7 @@ export default {
         text: "搜索"
       },
       goodsTableData: [], //商品表格列表
+      tableMaxHeight: 0, //表格的最大高度，根据浏览器的窗体大小而定
       getOrdersParams: {
         query: "", //搜索参数
         pagenum: 1, //当前页码数
@@ -86,6 +87,7 @@ export default {
 
   created() {
     this.getGoodsList();
+    this.tableMaxHeight = window.innerHeight - 290; //表格的最大高度，根据浏览器的窗体大小而定
   },
 
   methods: {

@@ -22,7 +22,7 @@
         <el-tab-pane label="动态参数" name="many">
           <el-button :disabled="isDisabled1" size="mini" type="primary" @click="addParam">添加参数</el-button>
           <!-- 参数表格 -->
-          <el-table stripe border :data="tableData1" style="width: 100%">
+          <el-table stripe border :data="tableData1" style="width: 100%" :max-height="tableMaxHeight">
             <el-table-column align="center" type="expand">
               <template slot-scope="scope">
                 <el-tag
@@ -71,7 +71,7 @@
         <el-tab-pane label="静态属性" name="only">
           <el-button :disabled="isDisabled2" size="mini" type="primary" @click="addAttribute">添加属性</el-button>
           <!-- 属性表格 -->
-          <el-table stripe border :data="tableData2" style="width: 100%">
+          <el-table stripe border :data="tableData2" style="width: 100%" :max-height="tableMaxHeight">
             <el-table-column align="center" type="expand">
               <template slot-scope="scope">
                 <el-tag
@@ -174,6 +174,7 @@ export default {
       isDongTai: true, //tab是否处于动态参数项
       addDialog: false, //是否显示添加弹窗
       editorDialog: false, //是否显示修改弹框
+      tableMaxHeight: 0, //表格的最大高度，根据浏览器的窗体大小而定
       addForm: {
         attr_name: "" //参数名称
       },
@@ -222,6 +223,8 @@ export default {
 
   created() {
     this.getCategories();
+    console.log(window.innerHeight)
+    this.tableMaxHeight = window.innerHeight - 360; //表格的最大高度，根据浏览器的窗体大小而定
   },
 
   methods: {
@@ -485,7 +488,7 @@ export default {
 }
 
 .select {
-  padding: 20px 0;
+  padding: 10px 0 0 0;
 }
 
 .el-table {

@@ -7,7 +7,7 @@
       <el-breadcrumb-item>添加商品</el-breadcrumb-item>
     </el-breadcrumb>
 
-    <el-card>
+    <el-card :style="{'max-height':tableMaxHeight+'px'}">
       <el-alert :closable="false" title="添加商品信息" type="info" center show-icon></el-alert>
       <!-- 步骤条 -->
       <el-steps :align-center="true" :active="active" finish-status="success">
@@ -140,6 +140,7 @@ export default {
         label: "cat_name",
         children: "children"
       }, //商品分类级联选择器 配置
+      tableMaxHeight: 0, //表格的最大高度，根据浏览器的窗体大小而定
       threeId: "", //级联选择器 获取的最后以及的分类ID
       goodsParamsList: [], //商品参数列表
       goodsAttrList: [], //商品属性列表
@@ -150,6 +151,7 @@ export default {
 
   created() {
     this.getGoodsClass();
+    this.tableMaxHeight = window.innerHeight - 135; //表格的最大高度，根据浏览器的窗体大小而定
   },
 
   methods: {
@@ -247,14 +249,17 @@ export default {
 
     /** tab切换前*/
     changeTab(activeName) {
+      console.log(activeName);
       return new Promise((resolve, reject) => {
         this.$refs.basicFormRef.validate(valid => {
           if (valid) {
             resolve();
             if (activeName == "1") {
               this.$message.error("基本信息");
+              this.active = 0;
             } else if (activeName == "2") {
               this.$message.error("商品参数");
+              this.active = 1;
               /**获取商品参数 {sel:'many'}   商品属性 {sel:'only'}*/
               request.getGoodsInfo(this.threeId, { sel: "many" }).then(res => {
                 console.log(res);
@@ -273,6 +278,7 @@ export default {
               });
             } else if (activeName == "3") {
               this.$message.error("商品属性");
+              this.active = 2;
               /**获取商品参数 {sel:'many'}   商品属性 {sel:'only'}*/
               request.getGoodsInfo(this.threeId, { sel: "only" }).then(res => {
                 console.log(res);
@@ -291,8 +297,10 @@ export default {
               });
             } else if (activeName == "4") {
               this.$message.error("商品图片");
+              this.active = 3;
             } else {
               this.$message.error("商品内容");
+              this.active = 4;
             }
           } else {
             this.$message({
@@ -317,6 +325,10 @@ export default {
   padding-bottom: 20px;
 }
 
+.el-card {
+  overflow-y: scroll;
+}
+
 .el-steps {
   margin: 10px auto 0;
 }
@@ -338,7 +350,7 @@ export default {
 }
 
 /deep/ .ql-editor {
-  min-height: 300px;
+  min-height: 250px;
 }
 
 .addButton {

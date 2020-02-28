@@ -4,6 +4,9 @@
 
 import axios from 'axios'
 import NProgress from 'nprogress'
+import {
+    Message
+} from 'element-ui';
 
 axios.defaults.timeout = 10000 //请求超时时间
 axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1'
@@ -17,6 +20,7 @@ axios.interceptors.request.use(
         return config
     },
     error => {
+        console.log(11111111111)
         return Promise.reject(error)
     }
 )
@@ -31,6 +35,12 @@ axios.interceptors.response.use(
         return res
     },
     error => {
+        if (error.message.indexOf('timeout') != -1) {
+            Message.error('本次请求超时，请重试！')
+        } else {
+            Message.error('系统请求异常')
+        }
+        NProgress.done();
         return Promise.reject(error);
     }
 );
