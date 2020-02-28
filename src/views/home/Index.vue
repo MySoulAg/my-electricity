@@ -43,7 +43,9 @@
       </el-aside>
 
       <el-main>
+        <!-- <transition name="fade"> -->
         <router-view />
+         <!-- </transition> -->
       </el-main>
     </el-container>
   </el-container>
@@ -202,5 +204,23 @@ export default {
 
 .iconfont {
   margin-right: 5px;
+}
+
+
+
+.fade-enter-active {
+  transition: all 0.3s ease;
+}
+.fade-leave-active {
+  transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.fade-enter,
+.fade-leave-to {
+  transform: translateX(-100px);
+  opacity: 0;
+}
+.fade-enter {
+  transform: translateX(100px);
+  opacity: 0;
 }
 </style>
