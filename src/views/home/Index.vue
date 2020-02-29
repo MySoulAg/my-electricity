@@ -43,9 +43,9 @@
       </el-aside>
 
       <el-main>
-        <!-- <transition name="fade"> -->
-        <router-view />
-         <!-- </transition> -->
+        <transition name="fade">
+          <router-view />
+        </transition>
       </el-main>
     </el-container>
   </el-container>
@@ -195,6 +195,9 @@ export default {
 
 .el-main {
   background-color: #eaedf1;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow: hidden;
 }
 
 .el-menu-vertical-demo:not(.el-menu--collapse) {
@@ -206,21 +209,21 @@ export default {
   margin-right: 5px;
 }
 
-
-
-.fade-enter-active {
-  transition: all 0.3s ease;
-}
+.fade-enter-active,
 .fade-leave-active {
-  transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
+  transition: all 0.5s;
 }
-.fade-enter,
+
 .fade-leave-to {
-  transform: translateX(-100px);
+  transform: translateX(50px);
   opacity: 0;
 }
+.fade-enter-to {
+  transform: translateX(-100%);
+  opacity: 1;
+}
 .fade-enter {
-  transform: translateX(100px);
+  transform: translateX(-105%);
   opacity: 0;
 }
 </style>

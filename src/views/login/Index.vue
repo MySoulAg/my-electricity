@@ -90,31 +90,37 @@ export default {
       this.isLoading = true;
       this.loginText = "登录中";
 
-      request.login(this.ruleForm).then(res => {
-        console.log(res);
-        this.isLoading = false;
-        this.loginText = "登录";
-        if (res.meta.status == 200) {
-          console.log("登录成功");
-          window.sessionStorage.setItem("token", res.data.token);
-          this.$router.push("/home");
-        } else {
-          console.log("登录失败");
-          if (res.meta.status == 400 && res.meta.msg == "用户名不存在") {
-            this.$nextTick(() => {
-              this.errorUserName = "用户名不存在";
-            });
-            this.errorUserName = "";
-            this.$refs.username.focus(); //聚焦到用户名输入框
-          } else if (res.meta.status == 400 && res.meta.msg == "密码错误") {
-            this.$nextTick(() => {
-              this.errorPassword = "密码错误";
-            });
-            this.errorPassword = "";
-            this.$refs.password.focus();
+      request
+        .login(this.ruleForm)
+        .then(res => {
+          console.log(res);
+          this.isLoading = false;
+          this.loginText = "登录";
+          if (res.meta.status == 200) {
+            console.log("登录成功");
+            window.sessionStorage.setItem("token", res.data.token);
+            this.$router.push("/home");
+          } else {
+            console.log("登录失败");
+            if (res.meta.status == 400 && res.meta.msg == "用户名不存在") {
+              this.$nextTick(() => {
+                this.errorUserName = "用户名不存在";
+              });
+              this.errorUserName = "";
+              this.$refs.username.focus(); //聚焦到用户名输入框
+            } else if (res.meta.status == 400 && res.meta.msg == "密码错误") {
+              this.$nextTick(() => {
+                this.errorPassword = "密码错误";
+              });
+              this.errorPassword = "";
+              this.$refs.password.focus();
+            }
           }
-        }
-      });
+        })
+        .catch(() => {
+          this.isLoading = false;
+          this.loginText = "登录";
+        });
     }
   }
 };
