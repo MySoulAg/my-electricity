@@ -1,60 +1,68 @@
 <template>
-  <el-container>
-    <el-header>
-      <div class="logo" @click="goHome">
-        <div class="img"></div>
-        <h1>电商后台管理系统</h1>
-      </div>
-      <el-button type="info" size="small" @click="loginout">退出</el-button>
-    </el-header>
-
-    <el-container>
-      <el-aside width="auto">
-        <div class="switch" @click="cllapseFun">
-          <i :class="isCollapse?'el-icon-s-unfold':'el-icon-s-fold'"></i>
+  <transition name="fade1">
+    <el-container v-show="isShow">
+      <el-header>
+        <div class="logo" @click="goHome">
+          <div class="img"></div>
+          <h1>电商后台管理系统</h1>
         </div>
-        <el-menu
-          :default-active="defaultActive"
-          class="el-menu-vertical-demo"
-          background-color="#333744"
-          text-color="#fff"
-          active-text-color="#409EFF"
-          :collapse="isCollapse"
-          :unique-opened="true"
-          :router="true"
-          @select="selectMenu"
-          @open="openMenu"
-          ref="menuRef"
-        >
-          <el-submenu :index="item.id+''" v-for="item in menuList" :key="item.id">
-            <template slot="title">
-              <i :class="asideIcon(item.id)"></i>
-              <span>{{item.authName}}</span>
-            </template>
+        <el-button type="info" size="small" @click="loginout">退出</el-button>
+      </el-header>
 
-            <el-menu-item-group>
-              <el-menu-item :index="'/'+item1.path" v-for="item1 in item.children" :key="item1.id">
-                <i class="iconfont icon-ca-xuexizhongxin-xiaofangkuai"></i>
-                <span>{{item1.authName}}</span>
-              </el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
-        </el-menu>
-      </el-aside>
+      <el-container>
+        <el-aside width="auto">
+          <div class="switch" @click="cllapseFun">
+            <i :class="isCollapse?'el-icon-s-unfold':'el-icon-s-fold'"></i>
+          </div>
+          <el-menu
+            :default-active="defaultActive"
+            class="el-menu-vertical-demo"
+            background-color="#333744"
+            text-color="#fff"
+            active-text-color="#409EFF"
+            :collapse="isCollapse"
+            :unique-opened="true"
+            :router="true"
+            @select="selectMenu"
+            @open="openMenu"
+            ref="menuRef"
+          >
+            <el-submenu :index="item.id+''" v-for="item in menuList" :key="item.id">
+              <template slot="title">
+                <i :class="asideIcon(item.id)"></i>
+                <span>{{item.authName}}</span>
+              </template>
 
-      <el-main>
-        <transition name="fade">
-          <router-view />
-        </transition>
-      </el-main>
+              <el-menu-item-group>
+                <el-menu-item
+                  :index="'/'+item1.path"
+                  v-for="item1 in item.children"
+                  :key="item1.id"
+                >
+                  <i class="iconfont icon-ca-xuexizhongxin-xiaofangkuai"></i>
+                  <span>{{item1.authName}}</span>
+                </el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+          </el-menu>
+        </el-aside>
+
+        <el-main>
+          <transition :name="transitionName">
+            <router-view />
+          </transition>
+        </el-main>
+      </el-container>
     </el-container>
-  </el-container>
+  </transition>
 </template>
 <script>
 import request from "@/api/home/index.js";
 export default {
   data() {
     return {
+      isShow: false,
+      transitionName:'fade-left',
       defaultActive: "", //当前激活菜单
       isCollapse: false, //是否折叠侧边栏
       menuList: [] //侧边栏数据
@@ -64,6 +72,22 @@ export default {
   created() {
     this.defaultActive = window.sessionStorage.getItem("selectMenu");
     this.getMenuList();
+  },
+
+  mounted() {
+    this.isShow = true;
+  },
+
+  watch: {
+    $route(to, from) {
+      // 如果to索引大于from索引,判断为前进状态,反之则为后退状态
+      if (to.meta.index > from.meta.index) {
+        // 设置动画名称
+        this.transitionName = "fade-left";
+      } else {
+        this.transitionName = "fade-right";
+      }
+    }
   },
 
   methods: {
@@ -209,21 +233,58 @@ export default {
   margin-right: 5px;
 }
 
-.fade-enter-active,
-.fade-leave-active {
+//
+
+.fade-left-enter-active,
+.fade-left-leave-active {
   transition: all 0.5s;
 }
 
-.fade-leave-to {
+.fade-left-leave-to {
   transform: translateX(50px);
   opacity: 0;
 }
-.fade-enter-to {
+.fade-left-enter-to {
   transform: translateX(-100%);
   opacity: 1;
 }
-.fade-enter {
+.fade-left-enter {
   transform: translateX(-105%);
+  opacity: 0;
+}
+
+//
+
+.fade-right-enter-active,
+.fade-right-leave-active {
+  transition: all .5s;
+}
+
+.fade-right-leave-to {
+  transform: translateX(-50px);
+  opacity: 0;
+}
+.fade-right-enter-to {
+  transform: translateX(-100%);
+  opacity: 1;
+}
+.fade-right-enter {
+  transform: translateX(-95%);
+  opacity: 0;
+}
+
+//
+
+.fade1-enter-active {
+  transition: all 0.6s;
+}
+
+.fade1-enter-to {
+  transform: translateX(0px);
+  opacity: 1;
+}
+.fade1-enter {
+  transform: translateX(-50px);
   opacity: 0;
 }
 </style>

@@ -28,50 +28,80 @@ export default [{
             path: '/',
             name: "Welcome",
             component: Welcome,
+            meta:{
+                index:0
+            }
         },
         {
             path: '/users',
             name: "Users",
             component: Users,
+            meta:{
+                index:1
+            }
         },
         {
             path: '/roles',
             name: "Roles",
             component: Roles,
+            meta:{
+                index:2
+            }
         }, {
             path: '/rights',
             name: "Rights",
             component: Rights,
+            meta:{
+                index:3
+            }
         },
         {
             path: '/categories',
             name: "Categories",
             component: Categories,
+            meta:{
+                index:6
+            }
         },
         {
             path: '/goods',
             name: "Goods",
             component: Goods,
+            meta:{
+                index:4
+            }
         },
         {
             path: '/params',
             name: "Params",
             component: Params,
+            meta:{
+                index:5
+            }
         },
         {
             path: '/addGoods',
             name: "AddGoods",
             component: AddGoods,
+            meta:{
+                index:7
+            }
         },
         {
             path: '/orders',
             name: "Orders",
             component: Orders,
+            meta:{
+                index:8
+            }
         },
         {
             path: '/reports',
             name: "Reports",
             component: Reports,
+            meta:{
+                index:9
+            }
         },
     ]
 }, ]

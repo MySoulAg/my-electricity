@@ -1,40 +1,45 @@
 <template>
   <article>
-    <div class="form-box">
-      <div class="head-img">
-        <div class="nest"></div>
+    <transition name="fade-form">
+      <div class="form-box" v-show="isShowHeadImg">
+        <transition name="fade">
+          <div v-show="isShowHeadImg" class="head-img">
+            <div class="nest"></div>
+          </div>
+        </transition>
+
+        <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="demo-ruleForm">
+          <el-form-item prop="username" :error="errorUserName">
+            <el-input
+              ref="username"
+              prefix-icon="iconfont icon-iconyonghu"
+              type="text"
+              v-model="ruleForm.username"
+              autocomplete="off"
+              @keyup.enter.native="login"
+            ></el-input>
+          </el-form-item>
+          <el-form-item prop="password" :error="errorPassword">
+            <el-input
+              ref="password"
+              prefix-icon="iconfont icon-mima"
+              type="password"
+              v-model="ruleForm.password"
+              autocomplete="off"
+              @keyup.enter.native="login"
+            ></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              @click="login"
+              class="login-button"
+              type="primary"
+              :loading="isLoading"
+            >{{loginText}}</el-button>
+          </el-form-item>
+        </el-form>
       </div>
-      <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="demo-ruleForm">
-        <el-form-item prop="username" :error="errorUserName">
-          <el-input
-            ref="username"
-            prefix-icon="iconfont icon-iconyonghu"
-            type="text"
-            v-model="ruleForm.username"
-            autocomplete="off"
-            @keyup.enter.native="login"
-          ></el-input>
-        </el-form-item>
-        <el-form-item prop="password" :error="errorPassword">
-          <el-input
-            ref="password"
-            prefix-icon="iconfont icon-mima"
-            type="password"
-            v-model="ruleForm.password"
-            autocomplete="off"
-            @keyup.enter.native="login"
-          ></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            @click="login"
-            class="login-button"
-            type="primary"
-            :loading="isLoading"
-          >{{loginText}}</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+    </transition>
   </article>
 </template>
 <script>
@@ -64,11 +69,18 @@ export default {
         username: [{ validator: validatePass, trigger: "blur" }],
         password: [{ validator: validatePass2, trigger: "blur" }]
       },
+      isShowHeadImg: false,
       errorUserName: "", //用户名的错误信息
       errorPassword: "", //密码的错误信息
       isLoading: false,
       loginText: "登录"
     };
+  },
+
+  mounted() {
+    window.setTimeout(() => {
+      this.isShowHeadImg = true;
+    }, 500);
   },
 
   methods: {
@@ -171,5 +183,35 @@ article {
     left: 50%;
     transform: translate(-50%, 0);
   }
+}
+
+.fade-enter-active {
+  transition: all 1s;
+}
+
+.fade-enter-to {
+  top: -65px !important;
+  opacity: 1;
+}
+.fade-enter {
+  top: -155px !important;
+  opacity: 0;
+}
+
+.fade-form-enter-active {
+  transition: all 1s;
+}
+
+.fade-form-enter-to {
+  position: relative;
+  top: 0px;
+  // transform: translate(0px 0px) !important;
+  opacity: 1;
+}
+.fade-form-enter {
+  position: relative;
+  top: 50px;
+  // transform: translate(0px 50px) !important;
+  opacity: 0;
 }
 </style>

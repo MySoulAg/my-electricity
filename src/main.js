@@ -23,6 +23,8 @@ Vue.prototype.$echarts = echarts;
 
 
 router.beforeEach((to, from, next) => {
+  // console.log(to,'to')
+  // console.log(from,'from')
   if (to.path != '/login') {
     if (window.sessionStorage.getItem('token')) {
       next();
