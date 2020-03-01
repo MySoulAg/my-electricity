@@ -132,7 +132,7 @@ export default {
             trigger: "change"
           }
         ]
-      }, //基本信息表单验证
+      }, //基本信息表单验证 
       classOptions: [], //商品分类级联选择器 预选值
       classProps: {
         expandTrigger: "hover",
